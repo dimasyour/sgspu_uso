@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Заявка на повышение</title>
+</head>
+
+<body>
+    <h2>Заполнить заявку на повышение уровня ID: {{ level_now[0] }}</h2>
+    <p>Вы можете подать заявку на <b>повышение</b> вашего уровня</p>
+    <form method="POST" id="levelup">
+        <h3>Ваш уровень сейчас: <b>{{ level_now[1] }} </b></h3> 
+        <input type="hidden" name="user_id" id="user_id" value="{{ level_now[0] }}">
+        <label for="level">Выберите желаемый статус:</label>
+        <select id="level" name="level">
+            <option value = '1'>Пользователь</option>
+            <option value = '2'>Профорг</option>
+            <option value = '3' >Председатель профбюро факультета</option>
+            <option value = '4' >Председатель ППОС</option>
+            <option value = '5'>Управляющий</option>
+        </select>
+        <input type="submit" name="levelup" id="levelup" value="Подать заявку" />
+    </form>
+</body>
+
+</html>

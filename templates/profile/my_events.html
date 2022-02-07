@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Мои мероприятия</title>
+</head>
+
+<body>
+    <table cellspacing="1" border="1" cellpadding="5" width="700">
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Направление/Сфера</th>
+                <th scope="col">Дата</th>
+                <th scope="col">Награждение</th>
+                <th scope="col">Уровень</th>
+                <th scope="col">Создатель</th>
+                <th scope="col">Модератор</th>
+                <th scope="col">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+            <tr>
+                <td>
+                    <a href="/profile/event?event_id={{i.id}}" >{{ i.name }}</a>
+                </td>
+                <td>
+                    {{ i.sfera }}
+                </td>
+                <td>
+                    {{ i.dateE }}
+                </td>
+                <td>
+                    {{ i.nagrada }}
+                </td>
+                <td>
+                    {{ i.levelE }}
+                </td>
+                <td>
+                    {{ i.ownE }}
+                </td>
+                <td>
+                    {{ i.moderator }}
+                </td>
+                <td>
+                    {% if i.status == 0 %}
+                    На рассмотрении
+                    {% elif i.status == 1 %}
+                    Принято
+                    {% elif i.status == 2 %}
+                    Отклонено
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_event">Добавить мероприятие</a>
+    <a href="/profile/events_request">Заяки</a>
+    <a href="/user">Назад</a>
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Заяки мероприятий</title>
+    <meta name="description" content="Управление студенческими организациями">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome5-overrides.min.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+            <div class="container-fluid d-flex flex-column p-0"><a
+                    class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>СГСПУ УСО</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar">
+                    <li class="nav-item"><a class="nav-link" href="/profile"><i class="fas fa-user"></i><span>Мой
+                                профиль</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/add_event"><i
+                                class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/request_events"><i
+                                class="fas fa-plus-square"></i><span>Заявки</span></a></li>
+                </ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
+                        id="sidebarToggle" type="button"></button></div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3"
+                            id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link"
+                                    aria-expanded="false" data-bs-toggle="dropdown" href="#"><i
+                                        class="fas fa-search"></i></a>
+                            </li>
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
+                                        aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{info[1]+"
+                                            "+info[2]}}</span><img class="border rounded-circle img-profile"
+                                            src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
+                                            class="dropdown-item" href="/profile"><i
+                                                class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Профиль</a><a
+                                            class="dropdown-item" href="/profile/settings"><i
+                                                class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Настройка</a><a
+                                            class="dropdown-item" href="/"><i
+                                                class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Заявки</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item"
+                                            href="/user_logout"><i
+                                                class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Выйти</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-start text-dark mb-4">{{heading}} заявки</h3>
+                        </div>
+                        <div class="col-xxl-3">
+                            <select class="form-select form-control-user" id="dynamic_select">
+                                <option selected>Выберите тип заявок...</option>
+                                <option value="/request_events?table=neob">Необработанные</option>
+                                <option value="/request_events?table=ob">Обработанные</option>
+                                <option value="/request_events?table=cancel">Отклонённые</option>
+                                <option value="/request_events?table=agree">Принятые</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="card shadow mb-3">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table table-sm">
+                                            <thead>
+                                                <tr class="text-center">
+                                                    <th class="table-primary">Название</th>
+                                                    <th class="table-primary">Сфера</th>
+                                                    <th class="table-primary">Дата начала</th>
+                                                    <th class="table-primary">Дата завершения</th>
+                                                    <th class="table-primary">Начало регистрации</th>
+                                                    <th class="table-primary">Завершение регистрации</th>
+                                                    <th class="table-primary">Создатель</th>
+                                                    <th class="table-primary">Статус</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for event in events %}
+                                                    {% if event[11] == 0 %}
+                                                        <tr class="text-center table-warning">
+                                                    {% elif event[11] == 1 %}
+                                                        <tr class="text-center table-success">
+                                                    {% elif event[11] == 2 %}
+                                                        <tr class="text-center table-danger">
+                                                    {% else %}
+                                                        <tr class="text-center">
+                                                    {% endif %}
+                                                    <td><a href="/event?id_str={{event[12]}}">{{event[1]}}</a></td>
+                                                    <td>{{event[3]}}</td>
+                                                    <td>{{event[5]}}</td>
+                                                    <td>{{event[6]}}</td>
+                                                    <td>{{event[7]}}</td>
+                                                    <td>{{event[8]}}</td>
+                                                    <td>{{event[13] + ' ' + event[14]}}</td>
+                                                    <td>{{event[11]}}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Хадиуллин Дмитрий © СГСПУ УСО 2022</span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script>
+        $(function () {
+            // bind change event to select
+            $('#dynamic_select').on('change', function () {
+                var url = $(this).val(); // get selected value
+                if (url) { // require a URL
+                    window.location = url;
+                }
+                return false;
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/bs-init.js') }}"></script>
+</body>
+
+</html>

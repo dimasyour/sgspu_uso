@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome5-overrides.min.css') }}">
+</head>
+
+<body>
+    <h1>Привет, {{ firstname }}</h1>
+    <table cellspacing="1" border="1" cellpadding="5" width="600">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Эл.почта</th>
+                <th scope="col">Уч.заведение</th>
+                <th scope="col">Уровень</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+            <tr>
+                <td>
+                    {{ i.id }}
+                </td>
+                <td>
+                    {{ i.firstname }}
+                </td>
+                <td>
+                    {{ i.lastname }}
+                </td>
+                <td>
+                    {{ i.email }}
+                </td>
+                <td>
+                    {% if i.uzName == ''%}
+                    <a href="/profile/uz">Добавить</a>
+                    {% else %}
+                        {{ i.uzName }}
+                    {% endif %}
+                </td>
+                <td>
+                    {{ i.level }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_event">Добавить мероприятие</a>
+    <a href="/profile/my_events">Мои мероприятия</a>
+    <a href="/events">Календарь мероприятий</a>
+    <a href="/levelup">Изменить уровень</a>
+    <a href="/profile/calend">Мой календарь</a>
+    {% if id_user == 1 %}
+    <a href="/admin">Админ-панель</a>
+    {% endif %}
+    <a href="/user_logout">Выйти</a>
+    <br>
+
+    <h4>В обработке</h4>
+    {% for d in data %}
+        {% if d[4] != 0 and d[1] != 0 %}
+            <p>{{d[0]}}</p>
+            <div class="progress">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: {{(d[1] / d[4]) * 100}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <h4>Принятые</h4>
+    {% for d in data %}
+        {% if d[4] != 0 and d[2] != 0 %}
+            <p>{{d[0]}}</p>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{(d[2] / d[4]) * 100}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <h4>Отклоненные</h4>
+    {% for d in data %}
+        {% if d[4] != 0 and d[3] != 0 %}
+            <p>{{d[0]}}</p>
+            <div class="progress">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{(d[3] / d[4]) * 100}}%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+    <h4>Всего в обработке: {{data2[0]}}</h4>
+
+    <h4>Всего принято: {{data2[1]}}</h4>
+
+    <h4>Всего отклонено: {{data2[2]}}</h4>
+
+</body>
+</html>

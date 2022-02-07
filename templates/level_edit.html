@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Изменить уровень</title>
+</head>
+
+<body>
+    <h2>Уровень <i>{{ info[1] }} {{ info [2]}}</i>: <u>{{ info[5] }}</u></h2>
+    <h3>Форма для изменения уровня</h3>
+    <form method="POST" id="level_edit" action="/levelup">
+        <input type="hidden" name="user_id" id="user_id" value="{{ info[0] }}">
+        <label for="level">Какой уровень установить для этого пользователя: </label>
+        <select id="level" name="level">
+            {% if info[5] == 1 %} 
+            <option value = '1' selected>Пользователь</option>
+            {% else %}
+            <option value = '1'>Пользователь</option>
+            {% endif %}
+            {% if info[5] == 2 %} 
+            <option value = '2' selected>Профорг</option>
+            {% else %}
+            <option value = '2'>Профорг</option>
+            {% endif %}
+            {% if info[5] == 3 %} 
+            <option value = '3' selected>Председатель профбюро факультета</option>
+            {% else %}
+            <option value = '3'>Председатель профбюро факультета</option>
+            {% endif %}
+            {% if info[5] == 4 %} 
+            <option value = '4' selected>Председатель ППОС</option>
+            {% else %}
+            <option value = '4'>Председатель ППОС</option>
+            {% endif %}
+            {% if info[5] == 5 %} 
+            <option value = '5' selected>Управляющий</option>
+            {% else %}
+            <option value = '5'>Управляющий</option>
+            {% endif %}
+            <!-- TODO: Оптимизировать участок кода с выпадающем меню -->
+        </select>
+        <input type="submit" name="level_edit" id="level_edit" value="Установить" />
+    </form>
+</body>
+
+</html>

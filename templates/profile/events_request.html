@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Заяки</title>
+</head>
+
+<body>
+    <table cellspacing="1" border="1" cellpadding="5" width="700">
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Направление/Сфера</th>
+                <th scope="col">Дата начала</th>
+                <th scope="col">Дата окончания</th>
+                <th scope="col">Награждение</th>
+                <th scope="col">Уровень</th>
+                <th scope="col">Создатель</th>
+                <th scope="col">Модератор</th>
+                <th scope="col">Уч.заведение</th>
+                <th scope="col">Принять</th>
+                <th scope="col">Отклонить</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+            <tr>
+                <td>
+                    <a href="/event?id={{i.id}}" >{{ i.name }}</a>
+                </td>
+                <td>
+                    {{ i.sfera }}
+                </td>
+                <td>
+                    {{ i.dateStart }}
+                </td>
+                <td>
+                    {{ i.dateEnd }}
+                </td>
+                <td>
+                    {{ i.nagrada }}
+                </td>
+                <td>
+                    {{ i.levelE }}
+                </td>
+                <td>
+                    {{ i.ownE }}
+                </td>
+                <td>
+                    {{ i.moderator }}
+                </td>
+                <td>
+                    {{ i.uzName }}
+                </td>
+                <td>
+                    <a href="events_request?id={{ i.id}}&solution=yes">Принять</a>
+                </td>
+                <td>
+                    <a href="events_request?id={{ i.id }}&solution=no">Отклонить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_event">Добавить мероприятие</a>
+    <a href="/profile/my_events">Мои мероприятия</a>
+    <a href="/user">Назад</a>
+</body>
+
+</html>

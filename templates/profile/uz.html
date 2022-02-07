@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Образование</title>
+</head>
+<body>
+        <!-- TODO: добавить поиск и авто-добавление уч.заведений -->
+        <form method="POST" id="education-form">
+        <label for="uzName">Учебное заведение: </label>
+        <select id="uzName" name="uzName">
+            <option value="СГСПУ">СГСПУ</option>
+            <option value="СГЭУ">СГЭУ</option>
+            <option value="СамГТУ">СамГТУ</option>
+        </select>
+        {% if level == 1 %}
+        <div class="department" id="category1">
+            <label for="department">Структурное подразделение: </label>
+            <select id="department" name="department">
+                <optgroup label="СГСПУ">
+                    <option value="СГСПУ-1">Факультет математики, физики и информатики</option>
+                    <option value="СГСПУ-2">Факультет психологии и специального образования</option>
+                    <option value="СГСПУ-3">Факультет культуры и искусства</option>
+                    <option value="СГСПУ-4">Исторический факультет</option>
+                    <option value="СГСПУ-5">Филологический факультет</option>
+                    <option value="СГСПУ-6">Факультет иностранных языков</option>
+                    <option value="СГСПУ-7">Факультет экономики, управления и сервиса</option>
+                    <option value="СГСПУ-8">Факультет физической культуры и спорта</option>
+                    <option value="СГСПУ-9">Факультет начального образования</option>
+                    <option value="СГСПУ-10">Естевственно-географический факультет</option>
+                </optgroup>
+                <optgroup  label="СГЭУ">
+                    <option value="СГЭУ-1">Институт экономики и предприятий</option>
+                    <option value="СГЭУ-2">Институт менеджмента</option>
+                    <option value="СГЭУ-3">Институт права</option>
+                </optgroup>
+                <optgroup label="СамГТУ">
+                    <option value="САМГТУ-1">Инженерно-технологический факультет</option>
+                    <option value="САМГТУ-2">Академия строительства и архитектуры</option>
+                    <option value="САМГТУ-3">Институт автоматики и информационных технологий</option>
+                    <option value="САМГТУ-4">Институт инженерно экономического и гуманитарного образования</option>
+                    <option value="САМГТУ-5">Иститут нефтегазовых технологий</option>
+                    <option value="САМГТУ-6">Теплоэнергетический факультет</option>
+                    <option value="САМГТУ-7">Факультет пищевых производств</option>
+                    <option value="САМГТУ-8">Факультет металлургии, машиностроения и транспорта</option>
+                    <option value="САМГТУ-9">Химико-технологический факультет</option>
+                    <option value="САМГТУ-10">Электротехнический факультет</option>
+                </optgroup>
+            </select>
+        {% else %}
+            <input value="Нет факультета" id="department" name="department" type="hidden"></input>
+        {% endif%}
+            <input type="submit" name="adduz" id="adduz" value="Добавить" />
+        </div>
+        </form>
+</body>
+</html>
+<script>
+    var firstDD = document.getElementById('uzName');
+    firstDD.addEventListener('change', changeDD);
+    function changeDD() {
+        var fValue = firstDD.value;
+        document.querySelectorAll('#department > optgroup').forEach(function (el) {
+            if (el.label != fValue)
+                el.style.display = 'none';
+            else
+                el.style.display = 'block';
+        });
+        document.querySelector('#department').value = "";
+    }
+    changeDD(firstDD);
+</script>

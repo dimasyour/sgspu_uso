@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Мой календарь</title>
+</head>
+
+<body>
+<h2>Мероприятия на которые я записан</h2>
+</br>
+<a href="/user">Назад</a>
+<table cellspacing="1" border="1" cellpadding="5" width="700">
+    <thead>
+        <tr>
+            <th scope="col">Название</th>
+            <th scope="col">Сфера</th>
+            <th scope="col">Дата начала</th>
+            <th scope="col">Дата окончания</th>
+            <th scope="col">Рег.начало</th>
+            <th scope="col">Рег.конец</th>
+            <th scope="col">Дата создания</th>
+            <th scope="col">Зарегистрированны?</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in info %}
+        <tr>
+            <td>
+                <a href="/event?id={{i[0]}}" >{{ i[1] }}</a>
+            </td>
+            <td>
+                {{ i[2] }}
+            </td>
+            <td>
+                {{ i[3] }}
+            </td>
+            <td>
+                {{ i[4] }}
+            </td>
+            <td>
+                {{ i[5] }}
+            </td>
+            <td>
+                {{ i[6] }}
+            </td>
+            <td>
+                {{ i[7]}}
+            </td>
+            {% if i[8] == 1 %}
+            <td td bgcolor="#66C05B"> 
+                Да
+            </td>
+            {% else %}
+            <td td bgcolor="#C05B5B"> 
+                Нет
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

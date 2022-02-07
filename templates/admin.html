@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Профиль</title>
+</head>
+
+<body>
+    <h1>Привет, {{ firstname }}</h1>
+    <table cellspacing="1" border="1" cellpadding="5" width="600">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Эл.почта</th>
+                <th scope="col">Уч.заведение</th>
+                <th scope="col">Уровень</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+
+            <tr>
+                <td>
+                    <!-- interviewer name -->
+                    {{ i.id }}
+                </td>
+                <td>
+                    <!-- interviewer name -->
+                    {{ i.firstname }}
+                </td>
+                <td>
+                    <!-- company name -->
+                    {{ i.lastname }}
+                </td>
+                <td>
+                    <!-- job profile  -->
+                    {{ i.email }}
+                </td>
+                <td>
+                    <!-- job profile  -->
+                    {{ i.uzName }}
+                </td>
+                <td>
+                    <!-- job profile  -->
+                    {{ i.level }}
+                </td>
+                <td>
+                    <a href="level_edit?id= {{ i.id }}">Редактировать</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_event">Добавить мероприятие</a>
+    <a href="/levelup">Изменить уровень</a>
+    <a href="/level_request">Заявки</a>
+    <a href="/user_logout">Выйти</a>
+</body>
+
+</html>

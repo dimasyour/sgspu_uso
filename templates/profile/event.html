@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>{{info[0][1]}}</title>
+</head>
+
+<body>
+<h2>{{info[0][1]}} ({{info[0][2]}}) {{ info[0][3] }}</h2>
+</br>
+<table cellspacing="1" border="1" cellpadding="5" width="700">
+    <thead>
+        <tr>
+            <th scope="col">ID Пользователя</th>
+            <th scope="col">Дата регистрации</th>
+            <th scope="col">Статус</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in info %}
+        <tr>
+            <td>
+                {{ i[5] }}
+            </td>
+            <td>
+                {{ i[8] }}
+            </td>
+            {% if i[7] == 1 %}
+            <td td bgcolor="#66C05B"> 
+                Принят
+            </td>
+            <td td bgcolor="#2FAFD9">
+                <a href="/profile/event?event_id={{i[0]}}&user_id={{i[5]}}&solution=no">Отменить</a>
+            </td>
+            {% else %}
+            <td td bgcolor="#C05B5B"> 
+                Не принят
+            </td>
+            <td td bgcolor="#2FAFD9">
+                <a href="/profile/event?event_id={{i[0]}}&user_id={{i[5]}}&solution=yes">Принять</a>
+            </td>
+            {% endif %}
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

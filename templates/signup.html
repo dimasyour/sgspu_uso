@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация</title>
+    <!-- <script type="text/javascript"src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+    <style>
+        .faculty {
+            display: none;
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Регистрация нового пользователя</h2>
+    <form method="POST" id="register-form">
+        <label for="firstname">Имя: </label>
+        <input type="text" name="firstname" id="firstname" placeholder="Имя" />
+        <label for="lastname">Фамилия:</label>
+        <input type="text" name="lastname" id="lastname" placeholder="Фамилия" />
+        <label for="email">Эл.почта:</label>
+        <input type="email" name="email" id="email" placeholder="Email" />
+        <!-- TODO: заменить на радиобуттоны -->
+        <label for="you">Вы:</label>
+        <select id="you" name="you">
+            <option></option>
+            <option value=1>Студент</option>
+            <option value=0>Не являюсь студентом</option>
+        </select>
+        <label for="region">Регион: </label>
+        <input type="text" name="region" id="region" placeholder="Регион" />
+        <label for="password">Пароль: </label>
+        <input type="password" name="password" id="password" placeholder="Пароль" />
+        <label for="re_pass">Повторите пароль: </label>
+        <input type="password" name="re_pass" id="re_pass" placeholder="Пароль" />
+        <input type="submit" name="signup" id="signup" value="Зарегистрироваться" />
+    </form>
+    <a href="user_login">Уже зарегистрированы?</a>
+
+</html>
+<!-- <script>
+    var selectedDevice = null,
+        category1 = document.getElementById('category1'),
+        category2 = document.getElementById('category2');
+    function onChangeSelect(select) {
+        selectedDevice = this.options[this.selectedIndex].innerHTML;
+        if (selectedDevice == "Студент") {
+            (category1.style.display = 'block');
+            document.getElementById('department').hidden = false;
+        }
+        else {
+            (category1.style.display = 'none');
+            document.getElementById('department').hidden = true;
+        }
+    }
+    document.getElementById('you').addEventListener('change', onChangeSelect);
+</script>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Профиль</title>
+</head>
+
+<body>
+    <table cellspacing="1" border="1" cellpadding="5" width="700">
+        <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Направление/Сфера</th>
+                <th scope="col">Дата начала</th>
+                <th scope="col">Дата окончания</th>
+                <th scope="col">Награждение</th>
+                <th scope="col">Уровень</th>
+                <th scope="col">Создатель</th>
+                <th scope="col">Модератор</th>
+                <th scope="col">Рег.начало</th>
+                <th scope="col">Рег.конец</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+            <tr>
+                <td>
+                    <a href="event?id={{i.id}}" >{{ i.name }}</a>
+                </td>
+                <td>
+                    {{ i.sfera }}
+                </td>
+                <td>
+                    {{ i.dateStart }}
+                </td>
+                <td>
+                    {{ i.dateEnd }}
+                </td>
+                <td>
+                    {{ i.nagrada }}
+                </td>
+                <td>
+                    {{ i.levelE }}
+                </td>
+                <td>
+                    {{ i.ownE }}
+                </td>
+                <td>
+                    {{ i.moderator }}
+                </td>
+                <td>
+                    {{ i.dateRegStart }}
+                </td>
+                <td>
+                    {{ i.dateRegEnd }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/add_event">Добавить мероприятие</a>
+    <a href="/user">Назад</a>
+</body>
+
+</html>

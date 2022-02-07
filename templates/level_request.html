@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>Профиль</title>
+</head>
+
+<body>
+    <table cellspacing="1" border="1" cellpadding="5" width="600">
+        <thead>
+            <tr>
+                <th scope="col">ID Заявки</th>
+                <th scope="col">Фамилия/Имя</th>
+                <th scope="col">Уровень</th>
+                <th scope="col">Желаемый</th>
+                <th scope="col">Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in info %}
+            {% if i[6] == 0 %}
+            <tr>
+                <td>
+                    <!-- ID Заявки -->
+                    {{ i[0] }}
+                </td>
+                <td>
+                    <!-- Фамилия имя пользователя -->
+                    {{ i[3] + ' ' + i[2]}}
+                </td>
+                <td>
+                    <!-- Уровень пользователя  -->
+                    {{ i[4] }}
+                </td>
+                <td>
+                    <!-- Повышение/Понижение уровня до...  -->
+                    {{ i[5] }}
+                </td>
+                <td>
+                    <!-- Статус заявки  -->
+                    {{ i[6] }}
+                </td>
+                <td>
+                    <a href="level_request?id={{ i[1] }}&id_z={{ i[0] }}&solution=yes">Принять</a>
+                </td>
+                <td>
+                    <a href="level_request?id={{ i[1] }}&id_z={{ i[0] }}&solution=no">Отклонить</a>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>

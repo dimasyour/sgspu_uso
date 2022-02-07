@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Профиль пользователя</title>
+    <meta name="description" content="Управление студенческими организациями">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome5-overrides.min.css') }}">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0">
+            <div class="container-fluid d-flex flex-column p-0"><a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="#">
+                    <div class="sidebar-brand-icon rotate-n-15"><i class="fas fa-laugh-wink"></i></div>
+                    <div class="sidebar-brand-text mx-3"><span>СГСПУ USO</span></div>
+                </a>
+                <hr class="sidebar-divider my-0">
+                <ul class="navbar-nav text-light" id="accordionSidebar"></ul>
+                <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
+            </div>
+        </nav>
+        <div class="d-flex flex-column" id="content-wrapper">
+            <div id="content">
+                <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
+                    <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle me-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
+                        <ul class="navbar-nav flex-nowrap ms-auto">
+                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><i class="fas fa-search"></i></a>
+                                <div class="dropdown-menu dropdown-menu-end p-3 animated--grow-in" aria-labelledby="searchDropdown">
+                                    <form class="me-auto navbar-search w-100">
+                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
+                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown no-arrow">
+                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#"><span class="d-none d-lg-inline me-2 text-gray-600 small">{{info[1] + " " + info[2]}}</span><img class="border rounded-circle img-profile" src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}"></a>
+                                    <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a class="dropdown-item" href="/profile"><i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Профиль</a><a class="dropdown-item" href="#"><i class="fas fa-cogs fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Settings</a><a class="dropdown-item" href="#"><i class="fas fa-list fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Заявки</a>
+                                        <div class="dropdown-divider"></div><a class="dropdown-item" href="/user_logout"><i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Выйти</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <div class="container-fluid">
+                    <h3 class="text-dark mb-4">{{info[1] + " " + info[2]}}</h3>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}" width="160" height="160">
+                                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="button">Сохранить фотографию</button></div>
+                                </div>
+                            </div>
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="text-primary fw-bold m-0">Статистика ваших заявок</h6>
+                                </div>
+                                <div class="card-body">
+
+                                    <h4 class="small fw-bold">Необработанные</h4>
+                                    {% for d in data %}
+                                        {% if d[4] != 0 and d[1] != 0 %}
+                                            <h5 class="small fw-italic">{{d[0]}}</h4>
+                                            <div class="progress progress-sm mb-3">
+                                                <div class="progress-bar bg-warning" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{(d[1] / d[4]) * 100}}%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <h4 class="small fw-bold">Принятые</h4>
+                                    {% for d in data %}
+                                        {% if d[4] != 0 and d[2] != 0 %}
+                                            <h5 class="small fw-italic">{{d[0]}}</h4>
+                                            <div class="progress progress-sm mb-3">
+                                                <div class="progress-bar bg-success" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{(d[2] / d[4]) * 100}}%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    <h4 class="small fw-bold">Отклонённые</h4>
+                                    {% for d in data %}
+                                        {% if d[4] != 0 and d[3] != 0 %}
+                                            <h5 class="small fw-italic">{{d[0]}}</h4>
+                                            <div class="progress progress-sm mb-3">
+                                                <div class="progress-bar bg-danger" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: {{(d[3] / d[4]) * 100}}%;"></div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row mb-3 d-none">
+                                <div class="col">
+                                    <div class="card textwhite bg-primary text-white shadow">
+                                        <div class="card-body">
+                                            <div class="row mb-2">
+                                                <div class="col">
+                                                    <p class="m-0">Peformance</p>
+                                                    <p class="m-0"><strong>65.2%</strong></p>
+                                                </div>
+                                                <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                            </div>
+                                            <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="card textwhite bg-success text-white shadow">
+                                        <div class="card-body">
+                                            <div class="row mb-2">
+                                                <div class="col">
+                                                    <p class="m-0">Peformance</p>
+                                                    <p class="m-0"><strong>65.2%</strong></p>
+                                                </div>
+                                                <div class="col-auto"><i class="fas fa-rocket fa-2x"></i></div>
+                                            </div>
+                                            <p class="text-white-50 small m-0"><i class="fas fa-arrow-up"></i>&nbsp;5% since last month</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="card shadow mb-3">
+                                        <div class="card-header py-3">
+                                            <p class="text-primary m-0 fw-bold">Информация пользователя</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <form>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label" for="email"><strong>Эл.почта</strong></label><input class="form-control" type="email" id="email" placeholder="{{info[3]}}" name="email"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label" for="first_name"><strong>Имя</strong></label><input class="form-control" type="text" id="firstname" placeholder="{{info[1]}}" name="firstname"></div>
+                                                    </div>
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label" for="last_name"><strong>Фамилия</strong></label><input class="form-control" type="text" id="lastname" placeholder="{{info[2]}}" name="lastname"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3"><button class="btn btn-primary btn-sm" type="submit">Обновить данные</button></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="card shadow">
+                                        <div class="card-header py-3">
+                                            <p class="text-primary m-0 fw-bold">Контактная информация</p>
+                                        </div>
+                                        <div class="card-body">
+                                            <form method="POST" id="education-form">
+                                                <div class="mb-3"><label class="form-label" for="address"><strong>Учебное заведение</strong></label>
+                                                    <select class="form-select" id="uzName" name="uzName">
+                                                        <option value="СГСПУ">СГСПУ</option>
+                                                        <option value="СГЭУ">СГЭУ</option>
+                                                        <option value="СамГТУ">СамГТУ</option>
+                                                    </select>
+                                                </div>
+                                                <div class="row">
+                                                    {% if level == 1 %}
+                                                    <div class="col">
+                                                        <div class="mb-3"><label class="form-label" for="city"><strong>Структурное поздразделение</strong><br></label>
+                                                            <select class="form-select" id="department" name="department">
+                                                                <optgroup label="СГСПУ">
+                                                                    <option value="СГСПУ-1">Факультет математики, физики и информатики</option>
+                                                                    <option value="СГСПУ-2">Факультет психологии и специального образования</option>
+                                                                    <option value="СГСПУ-3">Факультет культуры и искусства</option>
+                                                                    <option value="СГСПУ-4">Исторический факультет</option>
+                                                                    <option value="СГСПУ-5">Филологический факультет</option>
+                                                                    <option value="СГСПУ-6">Факультет иностранных языков</option>
+                                                                    <option value="СГСПУ-7">Факультет экономики, управления и сервиса</option>
+                                                                    <option value="СГСПУ-8">Факультет физической культуры и спорта</option>
+                                                                    <option value="СГСПУ-9">Факультет начального образования</option>
+                                                                    <option value="СГСПУ-10">Естевственно-географический факультет</option>
+                                                                </optgroup>
+                                                                <optgroup  label="СГЭУ">
+                                                                    <option value="СГЭУ-1">Институт экономики и предприятий</option>
+                                                                    <option value="СГЭУ-2">Институт менеджмента</option>
+                                                                    <option value="СГЭУ-3">Институт права</option>
+                                                                </optgroup>
+                                                                <optgroup label="СамГТУ">
+                                                                    <option value="САМГТУ-1">Инженерно-технологический факультет</option>
+                                                                    <option value="САМГТУ-2">Академия строительства и архитектуры</option>
+                                                                    <option value="САМГТУ-3">Институт автоматики и информационных технологий</option>
+                                                                    <option value="САМГТУ-4">Институт инженерно экономического и гуманитарного образования</option>
+                                                                    <option value="САМГТУ-5">Иститут нефтегазовых технологий</option>
+                                                                    <option value="САМГТУ-6">Теплоэнергетический факультет</option>
+                                                                    <option value="САМГТУ-7">Факультет пищевых производств</option>
+                                                                    <option value="САМГТУ-8">Факультет металлургии, машиностроения и транспорта</option>
+                                                                    <option value="САМГТУ-9">Химико-технологический факультет</option>
+                                                                    <option value="САМГТУ-10">Электротехнический факультет</option>
+                                                                </optgroup>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    {% else %}
+                                                        <input value="Нет факультета" id="department" name="department" type="hidden"></input>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="mb-3"><input class="btn btn-primary btn-sm" name="adduz" id="adduz" type="submit" value="Обновить информацию"></input></div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="bg-white sticky-footer">
+                <div class="container my-auto">
+                    <div class="text-center my-auto copyright"><span>Copyright © SGSPU USO 2022</span></div>
+                </div>
+            </footer>
+        </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
+    </div>
+    <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/theme.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/bs-init.js') }}"></script>
+    <script>
+        var firstDD = document.getElementById('uzName');
+        firstDD.addEventListener('change', changeDD);
+        function changeDD() {
+            var fValue = firstDD.value;
+            document.querySelectorAll('#department > optgroup').forEach(function (el) {
+                if (el.label != fValue)
+                    el.style.display = 'none';
+                else
+                    el.style.display = 'block';
+            });
+            document.querySelector('#department').value = "";
+        }
+        changeDD(firstDD);
+    </script>
+</body>
+
+</html>
