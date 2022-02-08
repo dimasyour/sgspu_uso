@@ -1,0 +1,30 @@
+<!-- <img class="vert_center qrcode" src="{{ qrcode_url }}"> -->
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="uft-8">
+    <title>{{info[1]}}</title>
+</head>
+
+<body>
+<h2>{{info[1]}} ({{info[2]}}) {{ info[5] }}</h2>
+<img src="https://api.qrserver.com/v1/create-qr-code/?data=http://127.0.0.1:5000/event?id={{info[0]}}&amp;size=100x100&amp;color=053d8c"/>
+</br>
+<p>{{ info[3] }}</p>
+<p>{{ info[10] }}</p>
+{% if info[13] == 0 %}
+<h3>Вы уже <b>подали заявку</b> на мероприятие</h3>
+{% elif info[13] == 1 %}
+<h3>Вы уже <b>зарегистрированны</b> на мероприятие</h3>
+{% else %}
+<form method="POST" id="enroll-form" action="enroll">
+    <input type="hidden" name='event_id' value='{{info[0]}}'/>
+    <input type="submit" name="enroll" id="enroll" value="Записаться" />
+</form>
+{% endif %}
+
+</body>
+
+</html>

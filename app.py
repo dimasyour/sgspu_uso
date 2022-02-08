@@ -1,3 +1,4 @@
+from modulefinder import packagePathMap
 from os import error
 from unittest import removeResult
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify, Response
@@ -70,6 +71,7 @@ def user_login():
 @app.route('/register', methods=['GET', 'POST'])
 def user_signup():
     if request.method == 'POST':
+        username = db(request.form['username'])
         firstname = request.form['firstname']
         lastname = request.form['lastname']
         email = request.form['email']  # TODO: ошибка при одинаковом эмейле
@@ -84,7 +86,7 @@ def user_signup():
             department = '-'
         else:
             department = ''
-        newUser = User(firstname=firstname, lastname=lastname, email=email,
+        newUser = User(username=username, firstname=firstname, lastname=lastname, email=email,
                        uzName='', level=level, password=md5_hashpass, department=department, region=region, avatar='none.jpg')
         db.session.add(newUser)
         db.session.commit()
@@ -125,7 +127,7 @@ def user_page():
     data_math = math_plus()
     data_math_all = math_all(data_math)
     result = db.session.execute(
-        f'SELECT id, firstname, lastname, email, uzName, level FROM user WHERE id = {user_id};')
+        f'SELECT id, username, firstname, lastname, email, uzName, level FROM user WHERE id = {user_id};')
     return render_template('user.html', id_user=current_user.id, firstname=current_user.firstname, info=result, data=data_math, data2=data_math_all)
 
 
@@ -137,7 +139,7 @@ def profile():
     level_array = ['Незарегистрирован', 'Пользователь', 'Профорг',
                    'Председатель профбюро факультета', 'Председатель ППОС', 'Управляющий']
     cursor = db.session.execute(
-        f'SELECT id, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
+        f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
     result = cursor.fetchone()
     return render_template('profile.html', info=result, data=data_math, level_array=level_array, data2=data_math_all)
 
@@ -156,7 +158,7 @@ def settings():
         data_math = math_plus()
         data_math_all = math_all(data_math)
         cursor = db.session.execute(
-            f'SELECT id, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
+            f'SELECT id, username, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
         result = cursor.fetchone()
         return render_template('profile/settings.html', info=result, data=data_math, level=current_user.level)
 
@@ -175,40 +177,28 @@ def add_event():
         dateRegEnd = request.form['dateRegEnd']
         if current_user.level < 3 and level == 1:
             newEvent = Event(name=name, info=info, level=level, sfera=sfera, dateStart=dateStart, own=current_user.id,
-                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=3, status=0)
-            db.session.add(newEvent)
-            db.session.commit()
-            return redirect(url_for("profile"))
+                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=3, status=0, id_str=generate_string(16))
         elif current_user.level < 3 and level == 2:
             newEvent = Event(name=name, info=info, level=level, sfera=sfera, dateStart=dateStart, own=current_user.id,
-                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=0)
-            db.session.add(newEvent)
-            db.session.commit()
-            return redirect(url_for("profile"))
+                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=0, id_str=generate_string(16))
         elif current_user.level == 3 and level == 1:
             newEvent = Event(name=name, info=info, level=level, sfera=sfera, dateStart=dateStart, own=current_user.id,
-                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=3, status=1)
-            db.session.add(newEvent)
-            db.session.commit()
-            return redirect(url_for("profile"))
+                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=3, status=1, id_str=generate_string(16))
         elif current_user.level == 3 and level == 2:
             newEvent = Event(name=name, info=info, level=level, sfera=sfera, dateStart=dateStart, own=current_user.id,
-                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=0)
-            db.session.add(newEvent)
-            db.session.commit()
-            return redirect(url_for("profile"))
+                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=0, id_str=generate_string(16))
         elif current_user.level > 3 and level <= 2:
             newEvent = Event(name=name, info=info, level=level, sfera=sfera, dateStart=dateStart, own=current_user.id,
-                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=1)
-            db.session.add(newEvent)
-            db.session.commit()
-            return redirect(url_for("profile"))
+                             dateEnd=dateEnd, dateRegStart=dateRegStart, dateRegEnd=dateRegEnd, moderator=4, status=1, id_str=generate_string(16))
         else:
+            print('Ошибка добавления мероприятия!')
             redirect(url_for("add_event"))
+        db.session.add(newEvent)
+        db.session.commit()
         return redirect(url_for("profile"))
     else:
         cursor = db.session.execute(
-            f'SELECT id, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
+            f'SELECT id, username, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
         result = cursor.fetchone()
         return render_template('add_event.html', info=result)
 
@@ -223,28 +213,28 @@ def request_events():
             moderator_str = f'(event.moderator = 3 OR event.moderator = 4)'
         table = request.args.get('table')
         cursor = db.session.execute(
-            f'SELECT id, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
+            f'SELECT id, username, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
         result = cursor.fetchone()
         if table == 'neob' or table is None:
             heading = 'Необработанные'
             cursor = db.session.execute(
-                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 0)")
+                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.username, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 0)")
         elif table == 'ob':
             heading = 'Обработанные'
             cursor = db.session.execute(
-                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 1 OR event.status = 2)")
+                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.username, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 1 OR event.status = 2)")
         elif table == 'cancel':
             heading = 'Отклоннёные'
             cursor = db.session.execute(
-                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 2)")
+                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.username, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 2)")
         elif table == 'agree':
             heading = 'Принятые'
             cursor = db.session.execute(
-                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 1)")
+                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.username, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 1)")
         else:
             heading = 'Необработанные'
             cursor = db.session.execute(
-                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 0)")
+                f"SELECT event.id, event.name, event.info, event.sfera, event.level, event.dateStart, event.dateEnd, event.dateRegStart, event.dateRegEnd, event.own, event.moderator, event.status, event.id_str, user.username, user.firstname, user.lastname FROM event JOIN user ON (event.own = user.id) WHERE {moderator_str} AND (event.status = 0)")
         result_events = cursor.fetchall()
         return render_template('request_events.html', info=result, events=result_events, heading=heading)
     else:
@@ -369,8 +359,8 @@ def events():
     return render_template('events.html', info=result)
 
 
-@app.route('/event', methods=['GET'])
-def event():
+@app.route('/event-1', methods=['GET'])
+def event_1():
     if request.method == 'GET':
         event_id = request.args['id']
         # result = db.session.execute(
@@ -388,6 +378,61 @@ def event():
             return render_template('event.html', info=result)
     else:
         return redirect(url_for("events"))
+
+
+@app.route('/event', methods=['GET'])
+def event():
+    id_str = request.args.get('id_str')
+    if request.method == 'GET' and not id_str is None:
+        cursor_check = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+        if cursor_check.fetchone() is not None:
+            cursor = db.session.execute(
+                f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
+            result = cursor.fetchone()
+            cursor = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+            event = cursor.fetchone()
+            return render_template('event.html', info=result, event=event)
+        else:
+            print('Такого мероприятия не существует!')
+            return redirect(url_for("profile"))
+    else:
+        return redirect(url_for("profile"))
+
+
+@app.route('/request_event', methods=['GET', 'POST'])
+def request_event():
+    id_str = request.args.get('id_str')
+    if not id_str is None:
+        if request.method == 'POST':
+            solution = request.form['solution']
+            # TODO: проверка на обработанное мероприятие
+            if solution == 'agree':
+                db.session.execute(
+                    f"UPDATE event SET status = 1 WHERE id_str = '{id_str}';")
+                db.session.commit()
+                return redirect(url_for("request_events"))
+            elif solution == 'disagree':
+                db.session.execute(
+                    f"UPDATE event SET status = 2 WHERE id_str = '{id_str}';")
+                db.session.commit()
+                return redirect(url_for("request_events"))
+            else:
+                print('Ошибка')
+                return redirect(url_for("request_events"))
+        else:
+            cursor_check = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+            if cursor_check.fetchone() is not None:
+                cursor = db.session.execute(
+                    f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
+                result = cursor.fetchone()
+                cursor = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+                event = cursor.fetchone()
+                return render_template('request_event.html', info=result, event=event)
+            else:
+                print('Такого мероприятия не существует!')
+                return redirect(url_for("profile"))
+    else:
+        return redirect(url_for("profile"))
 
 
 @app.route("/profile/my_events", methods=['GET', 'POST'])
@@ -490,72 +535,8 @@ def my_event():
         return render_template('profile/event.html', info=result)
 
 
-@app.route('/download/pdf')
-def download_report():
-    result = []
-    for instance in db.session.query(Enroll).order_by(Enroll.user_id):
-        result.append({
-            'id': instance.id,
-            'event_id': instance.event_id,
-            'user_id': instance.user_id,
-            'dateReg': instance.dateReg,
-            'status': instance.status
-        })
-
-    pdf = FPDF()
-    pdf.add_page()
-
-    page_width = pdf.w - 2 * pdf.l_margin
-
-    pdf.set_font('Times', 'B', 14.0)
-    pdf.cell(page_width, 0.0, 'List of Enrolls', align='C')
-    pdf.ln(10)
-
-    pdf.set_font('Courier', '', 12)
-
-    col_width = page_width / 5
-
-    pdf.ln(1)
-
-    th = pdf.font_size
-
-    for row in result:
-        pdf.cell(col_width - 20, th, str(row['id']), border=1)
-        pdf.cell(col_width + 5, th, str(row['event_id']), border=1)
-        pdf.cell(col_width + 5, th, str(row['user_id']), border=1)
-        pdf.cell(col_width, th, str(row['dateReg']), border=1)
-        pdf.cell(col_width + 5, th, str(row['status']), border=1)
-        pdf.ln(th)
-
-    pdf.ln(10)
-
-    pdf.set_font('Times', '', 10.0)
-    pdf.cell(page_width, 0.0, '- end of report -', align='C')
-
-    pdf.output('enroll.pdf', 'F')
-
-    return Response(pdf.output(dest='S').encode('latin-1'), mimetype='application/pdf',
-                    headers={'Content-Disposition': 'attachment;filename=enroll.pdf'})
-
-
-def math():
-    sfera_array = ['Праздник', 'Наука', 'Волонтерство', 'Медиа (СМИ)', 'Наставничество', 'Неформальное образование',
-                   'Студенческие отряды', 'Наставничество', 'Творчество и культуры', 'Спорт и здоровье']
-    result = []
-    count = 0
-    for sfera in sfera_array:
-        query = db.session.query(Event).filter(
-            Event.own == current_user.id).filter(Event.sfera == sfera).count()
-        result.append(query)
-        if query != 0:
-            count = count + query
-    result.append(count)
-    return result
-
-
 def math_plus():
-    sfera_array = ['Праздник', 'Наука', 'Волонтерство', 'Медиа (СМИ)', 'Наставничество', 'Неформальное образование',
-                   'Студенческие отряды', 'Наставничество', 'Творчество и культуры', 'Спорт и здоровье']
+    sfera_array = ['Общественная', 'Творческая', 'Спортивная', 'Научная']
     status_array = [0, 1, 2]
     result = []
     for sfera in range(len(sfera_array)):
@@ -572,9 +553,7 @@ def math_plus():
                 sum_event = sum_event + result[i][j]
         result[i].append(sum_event)
         sum_event = 0
-
     return result
-
 
 def math_all(Arr):
     sum_success = 0
@@ -587,35 +566,11 @@ def math_all(Arr):
     result = [sum_progressing, sum_success, sum_cancel]
     return result
 
-
-def math_json():
-
-    sfera_array = ['Праздник', 'Наука', 'Волонтерство', 'Медиа (СМИ)', 'Наставничество', 'Неформальное образование',
-                   'Студенческие отряды', 'Наставничество', 'Творчество и культуры', 'Спорт и здоровье']
-    status_array = [0, 1, 2]
-    result = {}
-    value = []
-    for sfera in range(len(sfera_array)):
-        k = sfera_array[sfera]
-        for status in range(len(status_array)):
-            cursor = db.session.execute(
-                f"SELECT count(*) FROM event WHERE own = '{current_user.id}' AND sfera = '{sfera_array[sfera]}' AND status = {status}")
-            value.append(cursor.fetchone()[0])
-        for i in range(len(value)-2):
-            result[k] = {
-                'Обработано': str(value[i]),
-                'Принято': str(value[i+1]),
-                'Отклоненно': str(value[i+2])
-            }
-    json_object = json.dumps(
-        result, indent=4, ensure_ascii=False).encode("utf8")
-    return json_object
-
-
 def generate_string(length):
     letters_and_digits = string.ascii_letters + string.digits
     rand_string = ''.join(random.sample(letters_and_digits, length))
     return rand_string
+
 
 if __name__ == '__main__':
     print("Веб-приложение запущено!")

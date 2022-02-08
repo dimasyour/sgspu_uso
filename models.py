@@ -5,6 +5,7 @@ from flask_login import UserMixin
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120),  nullable=False)
     firstname = db.Column(db.String(120),  nullable=False)
     lastname = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), nullable=False, unique=True)
@@ -16,7 +17,7 @@ class User(db.Model, UserMixin):
     avatar = db.Column(db.String(120), nullable=False)
     
     def __repr__(self):
-        return (f"User('{self.firstname}' , '{self.lastname}' , '{self.email}' , '{self.uzName}' , '{self.level}' ,'{self.password}', '{self.department}', '{self.region}', '{self.avatar}')")
+        return (f"User('{self.firstname}', '{self.username}', '{self.lastname}', '{self.email}' , '{self.uzName}' , '{self.level}' ,'{self.password}', '{self.department}', '{self.region}', '{self.avatar}')")
 
 
 class Event(db.Model, UserMixin):
@@ -33,9 +34,10 @@ class Event(db.Model, UserMixin):
     own = db.Column(db.Integer, nullable=False)
     moderator = db.Column(db.Integer, nullable=False)
     status = db.Column(db.Integer, nullable=False)
+    id_str = db.Column(db.String(120), nullable=False)
     
     def __repr__(self):
-        return (f"Event('{self.name}', '{self.info}',  '{self.sfera}', '{self.level}', '{self.dateStart}', '{self.dateEnd}', '{self.dateRegStart}', '{self.dateRegEnd}', '{self.own}', '{self.moderator}', '{self.status}')")
+        return (f"Event('{self.name}', '{self.info}',  '{self.sfera}', '{self.level}', '{self.dateStart}', '{self.dateEnd}', '{self.dateRegStart}', '{self.dateRegEnd}', '{self.own}', '{self.moderator}', '{self.status}', '{self.id_str}')")
 
 
 class Levelup_request(db.Model, UserMixin):

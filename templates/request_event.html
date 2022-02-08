@@ -80,7 +80,7 @@
                                             <h5 class="text-primary m-0 fw-bold">Мероприятие&nbsp;«{{event[1]}}»</h5>
                                         </div>
                                         <div class="card-body">
-                                            <form>
+                                            <form id="request_event-form" method="POST">
                                                 <div class="row">
                                                     <div class="col">
                                                         <div class="mb-3"><label class="form-label" for="name"><strong>Название:</strong></label><input class="form-control" type="text" id="name" name="name" value="{{event[1]}}" readonly=""></div>
@@ -113,6 +113,16 @@
                                                     </div>
                                                     <div class="col">
                                                         <div class="mb-3"><label class="form-label" for="dateRegEnd"><strong>Завершение приёма заявок:</strong><br></label><input class="form-control" type="text" id="dateRegEnd" name="name" value="{{event[8]}}" readonly=""></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <div class="text-end">
+                                                            <div class="btn-group" role="group">
+                                                                <button class="btn btn-success" type="submit" id=solution name=solution value="agree">Принять</button>
+                                                                <button class="btn btn-danger" type="submit" id=solution name=solution value="disagree">Отклонить</button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </form>

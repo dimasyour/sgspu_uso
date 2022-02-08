@@ -31,6 +31,8 @@
                                 class="fas fa-plus-square"></i><span>Добавить мероприятие</span></a></li>
                     <li class="nav-item"><a class="nav-link active" href="/request_events"><i
                                 class="fas fa-plus-square"></i><span>Заявки</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="/profile/settings"><i
+                                class="fas fa-cog"></i><span>Настройки</span></a></li>
                 </ul>
                 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0"
                         id="sidebarToggle" type="button"></button></div>
@@ -49,8 +51,8 @@
                             <li class="nav-item dropdown no-arrow">
                                 <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link"
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
-                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{info[1]+"
-                                            "+info[2]}}</span><img class="border rounded-circle img-profile"
+                                            class="d-none d-lg-inline me-2 text-gray-600 small">{{info[2]+"
+                                            "+info[3]}}</span><img class="border rounded-circle img-profile"
                                             src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
                                             class="dropdown-item" href="/profile"><i
@@ -88,7 +90,7 @@
                             <div class="card shadow mb-3">
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table table table-sm">
+                                        <table class="table table-hover table-sm">
                                             <thead>
                                                 <tr class="text-center">
                                                     <th class="table-primary">Название</th>
@@ -98,7 +100,6 @@
                                                     <th class="table-primary">Начало регистрации</th>
                                                     <th class="table-primary">Завершение регистрации</th>
                                                     <th class="table-primary">Создатель</th>
-                                                    <th class="table-primary">Статус</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -112,14 +113,13 @@
                                                     {% else %}
                                                         <tr class="text-center">
                                                     {% endif %}
-                                                    <td><a href="/event?id_str={{event[12]}}">{{event[1]}}</a></td>
+                                                    <td><a href="/request_event?id_str={{event[12]}}">{{event[1]}}</a></td>
                                                     <td>{{event[3]}}</td>
                                                     <td>{{event[5]}}</td>
                                                     <td>{{event[6]}}</td>
                                                     <td>{{event[7]}}</td>
                                                     <td>{{event[8]}}</td>
-                                                    <td>{{event[13] + ' ' + event[14]}}</td>
-                                                    <td>{{event[11]}}</td>
+                                                    <td><a href="/user?username={{event[13]}}">{{event[14] + ' ' + event[15]}}</a></td>
                                                 </tr>
                                                 {% endfor %}
                                             </tbody>

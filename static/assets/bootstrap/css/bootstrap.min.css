@@ -187,10 +187,10 @@ sup{
 }
 a{
     color:#053d8c;
-    text-decoration:underline
+    text-decoration:none
 }
 a:hover{
-    color:#3e5cb2
+    color:#021d42
 }
 a:not([href]):not([class]),a:not([href]):not([class]):hover{
     color:inherit;
@@ -1536,15 +1536,15 @@ progress{
     color:var(--bs-table-hover-color)
 }
 .table-primary{
-    --bs-table-bg: #dce3f9;
-    --bs-table-striped-bg: #d1d8ed;
+    --bs-table-bg: #053d8c;
+    --bs-table-striped-bg: #657fa2;
     --bs-table-striped-color: #000;
-    --bs-table-active-bg: #c6cce0;
+    --bs-table-active-bg: #134d9f;
     --bs-table-active-color: #000;
-    --bs-table-hover-bg: #ccd2e6;
+    --bs-table-hover-bg: #1b5cb7;
     --bs-table-hover-color: #000;
-    color:#000;
-    border-color:#c6cce0
+    color:#d8dee6;
+    border-color:#053d8c
 }
 .table-secondary{
     --bs-table-bg: #e7e7ea;
