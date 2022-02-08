@@ -34,7 +34,8 @@ def load_user(user_id):
 # TODO: Добавить html-страницу "неавторизованности"
 @login_manager.unauthorized_handler
 def unauthorized_callback():
-    return "Вы не авторизированы!"
+    print('"Вы не авторизированы!"')
+    return redirect(url_for("user_login"))
 
 
 @app.route('/')
