@@ -15,7 +15,7 @@ import random
 import string
 import os
 from werkzeug.utils import secure_filename
-
+import pymongo
 
 UPLOAD_FOLDER = '/img/photo/'
 DEPARTMENT = [
@@ -117,8 +117,9 @@ def user_signup():
     else:
         return render_template('register.html')
 
-
+# TODO: Удалить
 @app.route('/profile/uz', methods=['GET', 'POST'])
+@login_required
 def uz():
     if request.method == 'POST':
         uzName = request.form['uzName']
@@ -163,6 +164,7 @@ def profile():
     result = cursor.fetchone()
     return render_template('profile.html', info=result, data=data_math, level_array=level_array, data2=data_math_all)
 
+
 @app.route('/update_photo', methods=['GET', 'POST'])
 @login_required
 def update_photo():
@@ -177,9 +179,11 @@ def update_photo():
                 return redirect(url_for("settings"))
             try:
                 if file and allowed_file(file.filename):
-                    extension = secure_filename(file.filename).rsplit('.', 1)[1]
+                    extension = secure_filename(
+                        file.filename).rsplit('.', 1)[1]
                     new_file_name = generate_string(16)
-                    file.save(os.path.join('static/uploads/avatar', new_file_name + '.' + extension))
+                    file.save(os.path.join('static/uploads/avatar',
+                              new_file_name + '.' + extension))
                     path = new_file_name + '.' + extension
                     db.session.execute(
                         f"UPDATE user SET avatar = '{path}' WHERE id = {current_user.id};")
@@ -193,7 +197,8 @@ def update_photo():
             except:
                 flash('Ошибка загрузки файла', category='danger')
                 return redirect(url_for("settings"))
-    
+
+
 @app.route('/profile/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
@@ -205,9 +210,11 @@ def settings():
         result = cursor.fetchone()
         return render_template('profile/settings.html', info=result, data=data_math, level=current_user.level, array_department=DEPARTMENT)
 
+
 @app.route('/add_event', methods=['GET', 'POST'])
 @login_required
 def add_event():
+
     if 'add_event' in request.form and request.method == 'POST':
         name = request.form['name']
         info = request.form['info']
@@ -581,6 +588,19 @@ def my_event():
         return render_template('profile/event.html', info=result)
 
 
+@app.route("/api/events/all", methods=['GET'])
+def allBoardGames():
+    client = pymongo.MongoClient("mongodb+srv://dimasyour:2010Dima@events.j6srk.mongodb.net/events?retryWrites=true&w=majority")
+    db = client.events
+    col = db.event
+    events = col.find({},{'_id': 0})
+    allEvents = []
+    for event in events:
+        allEvents.append(event["name"])
+    print(allEvents)
+    return '<h1>heelo</h2>'
+
+
 def math_plus():
     sfera_array = ['Общественная', 'Творческая', 'Спортивная', 'Научная']
     status_array = [0, 1, 2]
@@ -623,6 +643,7 @@ def generate_string(length):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
 
 
 if __name__ == '__main__':
