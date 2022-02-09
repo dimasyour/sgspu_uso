@@ -117,21 +117,6 @@ def user_signup():
     else:
         return render_template('register.html')
 
-# TODO: Удалить
-@app.route('/profile/uz', methods=['GET', 'POST'])
-@login_required
-def uz():
-    if request.method == 'POST':
-        uzName = request.form['uzName']
-        department = request.form['department']
-        db.session.execute(
-            f"UPDATE user SET uzName = '{uzName}', department = '{department}' WHERE id = {current_user.id};")
-        db.session.commit()
-        return redirect(url_for("user_login"))
-    else:
-        return render_template('/profile/uz.html', level=current_user.level)
-
-
 @app.route('/user_logout', methods=['GET', 'POST'])
 @login_required
 def user_logout():
