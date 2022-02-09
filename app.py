@@ -1,4 +1,5 @@
 from modulefinder import packagePathMap
+from operator import ge
 from os import error
 from unittest import removeResult
 from flask import Flask, render_template, session, request, redirect, url_for, flash, jsonify, Response
@@ -12,11 +13,29 @@ from fpdf import FPDF
 import json
 import random
 import string
+import os
+from werkzeug.utils import secure_filename
+
+
+UPLOAD_FOLDER = '/img/photo/'
+DEPARTMENT = [
+    ['СГСПУ-1', 'ФМФИ', 'Факультет математики, физики и информатики'],
+    ['СГСПУ-2', 'ФПСО', 'Факультет психологии и специального образования'],
+    ['СГСПУ-3', 'ФКИ', 'Факультет культуры и искусства'],
+    ['СГСПУ-4', 'ИФ', 'Исторический факультет'],
+    ['СГСПУ-5', 'ФФ', 'Филологический факультет'],
+    ['СГСПУ-6', 'ФИЯ', 'Факультет иностранных языков'],
+    ['СГСПУ-7', 'ФЭУС', 'Факультет экономики, управления и сервиса'],
+    ['СГСПУ-8', 'ФФКиС', 'Факультет физической культуры и спорта'],
+    ['СГСПУ-9', 'ФНО', 'Факультет начального образования'],
+    ['СГСПУ-10', 'ЕГФ', 'Естественно-географический факультет'],
+]
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '1911'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 
@@ -27,7 +46,7 @@ login_manager.login_view = "login"
 
 @login_manager.user_loader
 def load_user(user_id):
-    # print("Сессия пользователя активна")
+    #print("Сессия пользователя активна")
     return User.query.get(int(user_id))
 
 
@@ -140,29 +159,51 @@ def profile():
     level_array = ['Незарегистрирован', 'Пользователь', 'Профорг',
                    'Председатель профбюро факультета', 'Председатель ППОС', 'Управляющий']
     cursor = db.session.execute(
-        f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
+        f'SELECT id, username, firstname, lastname, email, uzName, level, department, avatar FROM user WHERE id = {current_user.id};')
     result = cursor.fetchone()
     return render_template('profile.html', info=result, data=data_math, level_array=level_array, data2=data_math_all)
 
-
+@app.route('/update_photo', methods=['GET', 'POST'])
+@login_required
+def update_photo():
+    if request.method == 'POST':
+        if 'upload_photo' in request.form:
+            if 'photo' not in request.files:
+                flash('Нет файловой части', category='danger')
+                return redirect(url_for("settings"))
+            file = request.files['photo']
+            if file.filename == '':
+                flash('Файл не выбран', category='danger')
+                return redirect(url_for("settings"))
+            try:
+                if file and allowed_file(file.filename):
+                    extension = secure_filename(file.filename).rsplit('.', 1)[1]
+                    new_file_name = generate_string(16)
+                    file.save(os.path.join('static/uploads/avatar', new_file_name + '.' + extension))
+                    path = new_file_name + '.' + extension
+                    db.session.execute(
+                        f"UPDATE user SET avatar = '{path}' WHERE id = {current_user.id};")
+                    db.session.commit()
+                    # db.user.update_one({"_id": str(current_user.id), {"$set": {"avatar": path}})
+                    flash('Фотография успешно обновленна', category='success')
+                    return redirect(url_for("settings"))
+                else:
+                    flash('Недопустимое расширение файла', category='danger')
+                    return redirect(url_for("settings"))
+            except:
+                flash('Ошибка загрузки файла', category='danger')
+                return redirect(url_for("settings"))
+    
 @app.route('/profile/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    if request.method == 'POST':
-        uzName = request.form['uzName']
-        department = request.form['department']
-        db.session.execute(
-            f"UPDATE user SET uzName = '{uzName}', department = '{department}' WHERE id = {current_user.id};")
-        db.session.commit()
-        return redirect(url_for("profile"))
-    else:
+    if request.method == 'GET':
         data_math = math_plus()
         data_math_all = math_all(data_math)
         cursor = db.session.execute(
-            f'SELECT id, username, firstname, lastname, email, uzName, level, avatar FROM user WHERE id = {current_user.id};')
+            f'SELECT id, username, firstname, lastname, email, uzName, level, department, avatar FROM user WHERE id = {current_user.id};')
         result = cursor.fetchone()
-        return render_template('profile/settings.html', info=result, data=data_math, level=current_user.level)
-
+        return render_template('profile/settings.html', info=result, data=data_math, level=current_user.level, array_department=DEPARTMENT)
 
 @app.route('/add_event', methods=['GET', 'POST'])
 @login_required
@@ -295,7 +336,7 @@ def admin():
         return redirect(url_for("user_page"))
 
 
-@app.route('/level_edit/', methods=['GET', 'POST'])
+@app.route('/level_edit', methods=['GET', 'POST'])
 @login_required
 def level_edit():
     if request.method == 'GET' and current_user.id == 1:
@@ -385,12 +426,14 @@ def event_1():
 def event():
     id_str = request.args.get('id_str')
     if request.method == 'GET' and not id_str is None:
-        cursor_check = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+        cursor_check = db.session.execute(
+            f"SELECT * FROM event WHERE id_str = '{id_str}';")
         if cursor_check.fetchone() is not None:
             cursor = db.session.execute(
                 f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
             result = cursor.fetchone()
-            cursor = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+            cursor = db.session.execute(
+                f"SELECT * FROM event WHERE id_str = '{id_str}';")
             event = cursor.fetchone()
             return render_template('event.html', info=result, event=event)
         else:
@@ -421,12 +464,14 @@ def request_event():
                 print('Ошибка')
                 return redirect(url_for("request_events"))
         else:
-            cursor_check = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+            cursor_check = db.session.execute(
+                f"SELECT * FROM event WHERE id_str = '{id_str}';")
             if cursor_check.fetchone() is not None:
                 cursor = db.session.execute(
                     f'SELECT id, username, firstname, lastname, email, uzName, level, avatar, department FROM user WHERE id = {current_user.id};')
                 result = cursor.fetchone()
-                cursor = db.session.execute(f"SELECT * FROM event WHERE id_str = '{id_str}';")
+                cursor = db.session.execute(
+                    f"SELECT * FROM event WHERE id_str = '{id_str}';")
                 event = cursor.fetchone()
                 return render_template('request_event.html', info=result, event=event)
             else:
@@ -556,6 +601,7 @@ def math_plus():
         sum_event = 0
     return result
 
+
 def math_all(Arr):
     sum_success = 0
     sum_progressing = 0
@@ -567,10 +613,16 @@ def math_all(Arr):
     result = [sum_progressing, sum_success, sum_cancel]
     return result
 
+
 def generate_string(length):
     letters_and_digits = string.ascii_letters + string.digits
     rand_string = ''.join(random.sample(letters_and_digits, length))
     return rand_string
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome-all.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='assets/fonts/fontawesome5-overrides.min.css') }}">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.js"></script>
 </head>
 
 <body id="page-top">
@@ -62,7 +63,7 @@
                                         aria-expanded="false" data-bs-toggle="dropdown" href="#"><span
                                             class="d-none d-lg-inline me-2 text-gray-600 small">{{info[2] + " " +
                                             info[3]}}</span><img class="border rounded-circle img-profile"
-                                            src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}"></a>
+                                            src="{{ url_for('static', filename='uploads/avatar/'+info[8]) }}"></a>
                                     <div class="dropdown-menu shadow dropdown-menu-end animated--grow-in"><a
                                             class="dropdown-item" href="/profile"><i
                                                 class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>&nbsp;Профиль</a><a
@@ -81,16 +82,54 @@
                 </nav>
                 <div class="container-fluid">
                     <h3 class="text-dark mb-4">{{info[2] + " " + info[3]}}</h3>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="col-sm">
+                        {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    </div>
                     <div class="row mb-3">
                         <div class="col-lg-4">
                             <div class="card mb-3">
                                 <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4"
-                                        src="{{ url_for('static',filename= 'assets/img/avatars/none.jpg') }}"
+                                    src="{{ url_for('static', filename='uploads/avatar/'+info[8]) }}"
                                         width="160" height="160">
-                                    <div class="mb-3"><button class="btn btn-primary btn-sm" type="button">Сохранить
-                                            фотографию</button></div>
+                                        <div class="mb-3">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#sclModal">Обновить фото</button><br>
+                                        </div>
                                 </div>
                             </div>
+
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="text-primary fw-bold m-0">Статистика ваших заявок</h6>
@@ -175,84 +214,31 @@
                                             <p class="text-primary m-0 fw-bold">Контактная информация</p>
                                         </div>
                                         <div class="card-body">
-                                            <form method="POST" id="education-form">
+                                            <form method="POST" id="update_department">
                                                 <div class="mb-3"><label class="form-label"
-                                                        for="address"><strong>Учебное заведение</strong></label>
-                                                    <select class="form-select" id="uzName" name="uzName">
-                                                        <option value="СГСПУ">СГСПУ</option>
-                                                        <option value="СГЭУ">СГЭУ</option>
-                                                        <option value="СамГТУ">СамГТУ</option>
+                                                        for="department"><strong>Факультет</strong></label>
+                                                    <select class="form-select" id="department" name="department">
+                                                        {% for d in array_department %}
+                                                            {% if d[1] == info[7] %}
+                                                                <option value="{{d}}" selected>{{d[2]}}</option>
+                                                            {% else %}
+                                                            <option value="{{d}}">{{d[2]}}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        <!-- <option value="СГСПУ-1">Факультет математики, физики и информатики</option>
+                                                        <option value="СГСПУ-2">Факультет психологии и специального образования</option>
+                                                        <option value="СГСПУ-3">Факультет культуры и искусства</option>
+                                                        <option value="СГСПУ-4">Исторический факультет</option>
+                                                        <option value="СГСПУ-5">Филологический факультет</option>
+                                                        <option value="СГСПУ-6">Факультет иностранных языков</option>
+                                                        <option value="СГСПУ-7">Факультет экономики, управления и сервиса</option>
+                                                        <option value="СГСПУ-8">Факультет физической культуры и спорта</option>
+                                                        <option value="СГСПУ-9">Факультет начального образования</option>
+                                                        <option value="СГСПУ-10">Естественно-географический факультет</option> -->
                                                     </select>
                                                 </div>
-                                                <div class="row">
-                                                    {% if level == 1 %}
-                                                    <div class="col">
-                                                        <div class="mb-3"><label class="form-label"
-                                                                for="city"><strong>Структурное
-                                                                    поздразделение</strong><br></label>
-                                                            <select class="form-select" id="department"
-                                                                name="department">
-                                                                <optgroup label="СГСПУ">
-                                                                    <option value="СГСПУ-1">Факультет математики, физики
-                                                                        и информатики</option>
-                                                                    <option value="СГСПУ-2">Факультет психологии и
-                                                                        специального образования</option>
-                                                                    <option value="СГСПУ-3">Факультет культуры и
-                                                                        искусства</option>
-                                                                    <option value="СГСПУ-4">Исторический факультет
-                                                                    </option>
-                                                                    <option value="СГСПУ-5">Филологический факультет
-                                                                    </option>
-                                                                    <option value="СГСПУ-6">Факультет иностранных языков
-                                                                    </option>
-                                                                    <option value="СГСПУ-7">Факультет экономики,
-                                                                        управления и сервиса</option>
-                                                                    <option value="СГСПУ-8">Факультет физической
-                                                                        культуры и спорта</option>
-                                                                    <option value="СГСПУ-9">Факультет начального
-                                                                        образования</option>
-                                                                    <option value="СГСПУ-10">Естевственно-географический
-                                                                        факультет</option>
-                                                                </optgroup>
-                                                                <optgroup label="СГЭУ">
-                                                                    <option value="СГЭУ-1">Институт экономики и
-                                                                        предприятий</option>
-                                                                    <option value="СГЭУ-2">Институт менеджмента</option>
-                                                                    <option value="СГЭУ-3">Институт права</option>
-                                                                </optgroup>
-                                                                <optgroup label="СамГТУ">
-                                                                    <option value="САМГТУ-1">Инженерно-технологический
-                                                                        факультет</option>
-                                                                    <option value="САМГТУ-2">Академия строительства и
-                                                                        архитектуры</option>
-                                                                    <option value="САМГТУ-3">Институт автоматики и
-                                                                        информационных технологий</option>
-                                                                    <option value="САМГТУ-4">Институт инженерно
-                                                                        экономического и гуманитарного образования
-                                                                    </option>
-                                                                    <option value="САМГТУ-5">Иститут нефтегазовых
-                                                                        технологий</option>
-                                                                    <option value="САМГТУ-6">Теплоэнергетический
-                                                                        факультет</option>
-                                                                    <option value="САМГТУ-7">Факультет пищевых
-                                                                        производств</option>
-                                                                    <option value="САМГТУ-8">Факультет металлургии,
-                                                                        машиностроения и транспорта</option>
-                                                                    <option value="САМГТУ-9">Химико-технологический
-                                                                        факультет</option>
-                                                                    <option value="САМГТУ-10">Электротехнический
-                                                                        факультет</option>
-                                                                </optgroup>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    {% else %}
-                                                    <input value="Нет факультета" id="department" name="department"
-                                                        type="hidden"></input>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="mb-3"><input class="btn btn-primary btn-sm" name="adduz"
-                                                        id="adduz" type="submit" value="Обновить информацию"></input>
+                                                <div class="mb-3"><input class="btn btn-primary btn-sm" name="update_department"
+                                                        id="update_department" type="submit" value="Обновить факультет"></input>
                                                 </div>
                                             </form>
                                         </div>
@@ -268,8 +254,30 @@
                     <div class="text-center my-auto copyright"><span>Copyright © SGSPU USO 2022</span></div>
                 </div>
             </footer>
+            <div class="modal fade" id="sclModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Обновление фотографии профиля</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="upload_photo-form" method="POST" enctype="multipart/form-data" action="/update_photo">
+                                <label for="photo">Выберите файл...</label>
+                                <input type="file" name="photo" id="photo" class="form-control-file">
+                                <input type="submit" name="upload_photo" id="upload_photo" value="Загрузить" class="btn btn-primary"></input>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
     <script src="{{ url_for('static', filename='assets/bootstrap/js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/theme.js') }}"></script>
     <script src="{{ url_for('static', filename='assets/js/bs-init.js') }}"></script>
